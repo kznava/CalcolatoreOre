@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatore Ore | kznava </title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="favicon" type="image/ico" sizes="16x16" href="/favicon.ico">
+    <meta name="theme-color" content="#764ba2">
+    <meta name="description" content="Calcolatore professionale per il conteggio delle ore lavorative">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-opacity="0.3"/><stop offset="100%" stop-opacity="0"/></radialGradient></defs><circle cx="20" cy="20" r="3" fill="url(%23g)"/><circle cx="80" cy="30" r="2" fill="url(%23g)"/><circle cx="40" cy="70" r="4" fill="url(%23g)"/><circle cx="90" cy="80" r="2" fill="url(%23g)"/><circle cx="10" cy="60" r="3" fill="url(%23g)"/></svg>') repeat;
+            opacity: 0.1;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            padding: 50px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+            font-size: 36px;
+            font-weight: 800;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .time-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .time-section {
+            background: linear-gradient(145deg, #f8f9ff 0%, #e8edff 100%);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .time-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+            transition: all 0.5s ease;
+            transform: scale(0);
+        }
+
+        .time-section:hover::before {
+            transform: scale(1);
+        }
+
+        .time-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #4c51bf;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="time"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            background: white;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        input[type="time"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+
+        .results {
+            margin-top: 40px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8faff 100%);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .results-icon {
+            font-size: 28px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .results-title {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(102, 126, 234, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .result-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .result-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .result-label {
+            font-weight: 700;
+            color: #4a5568;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-icon {
+            font-size: 18px;
+            color: #667eea;
+        }
+
+        .result-value {
+            font-weight: 800;
+            font-size: 18px;
+            color: #667eea;
+        }
+
+        .status-complete {
+            color: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .status-warning {
+            color: #f59e0b;
+        }
+
+        .status-overtime {
+            color: #8b5cf6;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 5px rgba(139, 92, 246, 0.5); }
+            to { text-shadow: 0 0 20px rgba(139, 92, 246, 0.8); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #ef4444;
+            background: linear-gradient(145deg, #fef2f2 0%, #fee2e2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid rgba(239, 68, 68, 0.2);
+            font-weight: 600;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .real-time-info {
+            margin: 30px 0;
+            background: linear-gradient(145deg, #f0f8ff 0%, #e6f3ff 100%);
+            border-radius: 25px;
+            padding: 25px;
+            border: 2px solid rgba(102, 126, 234, 0.15);
+            animation: fadeInScale 0.5s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .real-time-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .real-time-icon {
+            font-size: 24px;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(79, 172, 254, 0.3);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .real-time-title {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .real-time-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(79, 172, 254, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .real-time-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.15);
+        }
+
+        .real-time-label {
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .real-time-value {
+            font-weight: 800;
+            font-size: 18px;
+            color: #4facfe;
+        }
+
+        .countdown {
+            animation: pulse 1.5s ease-in-out infinite;
+            color: #f59e0b !important;
+        }
+
+        .countdown.urgent {
+            color: #ef4444 !important;
+            animation: urgentPulse 0.8s ease-in-out infinite;
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.7; 
+                transform: scale(1.05);
+            }
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #764ba2;
+        }
+
+        /* Stili per il pulsante del meme */
+        .meme-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .meme-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .meme-button:active {
+            transform: translateY(0);
+        }
+
+        .meme-button i {
+            font-size: 20px;
+        }
+
+        /* Stili per la modale del meme */
+        .meme-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 95%;
+            width: 800px;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        .meme-modal.active {
+            display: block;
+        }
+
+        .meme-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .meme-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .meme-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .meme-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #4a5568;
+            transition: all 0.3s ease;
+        }
+
+        .meme-close:hover {
+            background: #ef4444;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .meme-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+        }
+
+        .meme-overlay.active {
+            display: block;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .meme-modal {
+                width: 95%;
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .meme-title {
+                font-size: 18px;
+                padding: 0 10px;
+            }
+
+            .meme-container {
+                max-height: 60vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+                margin: 10px;
+                margin-bottom: 60px; /* Spazio per il footer */
+            }
+
+            .time-sections {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .real-time-item {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-clock"></i> Calcolatore Ore</h1>
+        
+        <div class="time-sections">
+            <div class="time-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    Sessione Mattina
+                </div>
+                <div class="input-group">
+                    <label for="entrataMattina">
+                        <i class="fas fa-sign-in-alt"></i> Entrata
+                    </label>
+                    <input type="time" id="entrataMattina" title="Orario di entrata mattina">
+                </div>
+                <div class="input-group">
+                    <label for="uscitaPranzo">
+                        <i class="fas fa-utensils"></i> Uscita pranzo
+                    </label>
+                    <input type="time" id="uscitaPranzo" title="Orario di uscita per pranzo">
+                </div>
+            </div>
+
+            <div class="time-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    Sessione Pomeriggio
+                </div>
+                <div class="input-group">
+                    <label for="rientroPranzo">
+                        <i class="fas fa-sign-in-alt"></i> Rientro
+                    </label>
+                    <input type="time" id="rientroPranzo" title="Orario di rientro da pranzo">
+                </div>
+                <div class="input-group">
+                    <label for="uscitaFinale">
+                        <i class="fas fa-sign-out-alt"></i> Uscita finale
+                    </label>
+                    <input type="time" id="uscitaFinale" title="Orario di uscita finale">
+                </div>
+            </div>
+        </div>
+
+        <div id="realTimeInfo" class="real-time-info hidden">
+            <div class="real-time-header">
+                <div class="real-time-icon">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <div class="real-time-title">Calcolo Real-Time</div>
+            </div>
+            
+            <div class="real-time-item">
+                <span class="real-time-label">
+                    <i class="fas fa-clock"></i>
+                    Orario uscita stimato (per 8h)
+                </span>
+                <span id="orarioStimato" class="real-time-value"></span>
+            </div>
+            
+            <div class="real-time-item">
+                <span class="real-time-label">
+                    <i class="fas fa-hourglass-end"></i>
+                    Minuti per non perdere mezz'ora
+                </span>
+                <span id="minutiMezzoraCount" class="real-time-value countdown"></span>
+            </div>
+        </div>
+
+
+
+        <div id="results" class="results hidden">
+            <div class="results-header">
+                <div class="results-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="results-title">Riepilogo Giornata</div>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="fas fa-clock result-icon"></i>
+                    Tempo totale lavorato
+                </span>
+                <span id="tempoTotale" class="result-value"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="fas fa-hourglass-half result-icon"></i>
+                    Ore arrotondate (per difetto)
+                </span>
+                <span id="oreArrotondate" class="result-value"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="fas fa-check-circle result-icon"></i>
+                    Status giornata
+                </span>
+                <span id="statusGiornata" class="result-value"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="fas fa-plus-circle result-icon"></i>
+                    Per straordinario completo
+                </span>
+                <span id="perStraordinario" class="result-value"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="fas fa-star result-icon"></i>
+                    Straordinari effettuati
+                </span>
+                <span id="straordinari" class="result-value"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="fas fa-utensils result-icon"></i>
+                    Durata pausa pranzo
+                </span>
+                <span id="durataPausa" class="result-value"></span>
+            </div>
+        </div>
+
+        <div id="error" class="error hidden"></div>
+    </div>
+
+    <button class="meme-button" id="memeButton">
+        <i class="fas fa-laugh-squint"></i>
+        Meme del Giorno
+    </button>
+
+    <div class="meme-overlay" id="memeOverlay"></div>
+    <div class="meme-modal" id="memeModal">
+        <button class="meme-close" id="memeClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="meme-title" id="memeTitle"></div>
+        <div class="meme-container">
+            <img id="memeImage" src="" alt="Meme del giorno">
+        </div>
+    </div>
+
+    <footer class="footer">
+        Made with <i class="fas fa-heart" style="color: #ef4444;"></i> by <a href="https://github.com/kznava" target="_blank" rel="noopener">kznava</a>
+    </footer>
+
+    <script>
+        // Registra il service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registrato con successo:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Registrazione ServiceWorker fallita:', error);
+                    });
+            });
+        }
+
+        // Variabili globali per i timer
+        let countdownTimer;
+        let realTimeUpdateTimer;
+
+        // Auto-correzione orari
+        function autoCorrectTime(timeValue, isAfternoon = false) {
+            if (!timeValue) return timeValue;
+            
+            const [hours, minutes] = timeValue.split(':').map(Number);
+            
+            // Regole per mattina: dopo le 09:00 -> mezz'ora successiva
+            if (!isAfternoon && hours >= 9) {
+                if (minutes > 0 && minutes <= 30) {
+                    return `${hours.toString().padStart(2, '0')}:30`;
+                } else if (minutes > 30) {
+                    return `${(hours + 1).toString().padStart(2, '0')}:00`;
+                }
+            }
+            
+            // Regole per pomeriggio: dopo le 14:30 -> mezz'ora successiva
+            if (isAfternoon && (hours > 14 || (hours === 14 && minutes > 30))) {
+                if (minutes > 0 && minutes <= 30) {
+                    return `${hours.toString().padStart(2, '0')}:30`;
+                } else if (minutes > 30) {
+                    return `${(hours + 1).toString().padStart(2, '0')}:00`;
+                }
+            }
+            
+            return timeValue;
+        }
+
+        // Versione silenziosa del calcolo (senza mostrare errori)
+        function calcolaOreSilent() {
+            const entrataMattina = document.getElementById('entrataMattina').value;
+            const uscitaPranzo = document.getElementById('uscitaPranzo').value;
+            const rientroPranzo = document.getElementById('rientroPranzo').value;
+            const uscitaFinale = document.getElementById('uscitaFinale').value;
+            
+            const resultsDiv = document.getElementById('results');
+            
+            if (!entrataMattina || !uscitaPranzo || !rientroPranzo || !uscitaFinale) {
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+
+            // Converti orari in minuti
+            const minutiEntrataMattina = timeToMinutes(entrataMattina);
+            const minutiUscitaPranzo = timeToMinutes(uscitaPranzo);
+            const minutiRientroPranzo = timeToMinutes(rientroPranzo);
+            const minutiUscitaFinale = timeToMinutes(uscitaFinale);
+            
+            // Validazione logica orari (silent)
+            if (minutiUscitaPranzo <= minutiEntrataMattina || 
+                minutiRientroPranzo <= minutiUscitaPranzo || 
+                minutiUscitaFinale <= minutiRientroPranzo) {
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+            
+            // Calcola minuti lavorati
+            const minutiMattina = minutiUscitaPranzo - minutiEntrataMattina;
+            const minutiPomeriggio = minutiUscitaFinale - minutiRientroPranzo;
+            const minutiPausa = minutiRientroPranzo - minutiUscitaPranzo;
+            const minutiLavorati = minutiMattina + minutiPomeriggio;
+            
+            // Converti in ore e minuti
+            const oreLavorate = Math.floor(minutiLavorati / 60);
+            const minutiRimasti = minutiLavorati % 60;
+            
+            // Arrotonda per difetto alla mezz'ora
+            let oreArrotondate = oreLavorate;
+            if (minutiRimasti >= 30) {
+                oreArrotondate += 0.5;
+            }
+            
+            // Calcoli per 8 ore lavorative e straordinari
+            const oreNormali = 8;
+            const mezzoraStraodinario = 0.5;
+            
+            let statusGiornata = '';
+            let perStraordinario = '';
+            let straordinari = 0;
+            
+            if (oreArrotondate < oreNormali) {
+                const mancanti = oreNormali - oreArrotondate;
+                statusGiornata = `<span class="status-warning"><i class="fas fa-exclamation-circle"></i> Mancano ${formatOre(mancanti)} per le 8 ore</span>`;
+                perStraordinario = `Servono ancora ${formatOre(oreNormali + mezzoraStraodinario - oreArrotondate)} per lo straordinario`;
+            } else if (oreArrotondate === oreNormali) {
+                statusGiornata = '<span class="status-complete"><i class="fas fa-check-circle"></i> 8 ore completate!</span>';
+                perStraordinario = `Servono ${formatOre(mezzoraStraodinario)} per completare lo straordinario`;
+            } else if (oreArrotondate < oreNormali + mezzoraStraodinario) {
+                const mancanti = (oreNormali + mezzoraStraodinario) - oreArrotondate;
+                statusGiornata = '<span class="status-complete"><i class="fas fa-check-circle"></i> 8 ore completate!</span>';
+                perStraordinario = `<span class="status-warning">Mancano ${formatOre(mancanti)} per completare lo straordinario</span>`;
+            } else {
+                statusGiornata = '<span class="status-complete"><i class="fas fa-check-circle"></i> 8 ore completate!</span>';
+                straordinari = oreArrotondate - oreNormali;
+                perStraordinario = '<span class="status-overtime"><i class="fas fa-trophy"></i> Straordinario completato!</span>';
+            }
+            
+            // Mostra risultati
+            document.getElementById('tempoTotale').textContent = 
+                `${oreLavorate}h ${minutiRimasti}m`;
+            document.getElementById('oreArrotondate').textContent = 
+                formatOre(oreArrotondate);
+            document.getElementById('statusGiornata').innerHTML = statusGiornata;
+            document.getElementById('perStraordinario').innerHTML = perStraordinario;
+            document.getElementById('durataPausa').textContent = 
+                `${Math.floor(minutiPausa / 60)}h ${minutiPausa % 60}m`;
+            
+            if (straordinari > 0) {
+                document.getElementById('straordinari').innerHTML = 
+                    `<span class="status-overtime"><i class="fas fa-star"></i> ${formatOre(straordinari)}</span>`;
+            } else {
+                document.getElementById('straordinari').innerHTML = 
+                    '<span class="status-warning">Nessuno</span>';
+            }
+            
+            resultsDiv.classList.remove('hidden');
+        }
+
+        // Calcolo real-time completo
+        function updateAllRealTime() {
+            const entrataMattina = document.getElementById('entrataMattina').value;
+            const uscitaPranzo = document.getElementById('uscitaPranzo').value;
+            const rientroPranzo = document.getElementById('rientroPranzo').value;
+            const uscitaFinale = document.getElementById('uscitaFinale').value;
+            
+            const realTimeDiv = document.getElementById('realTimeInfo');
+            const countdownElement = document.getElementById('minutiMezzoraCount');
+            
+            // Se abbiamo almeno entrata mattina, calcoliamo il tempo lavorato
+            if (entrataMattina) {
+                const now = new Date();
+                const currentTime = now.getHours() * 60 + now.getMinutes();
+                let minutiLavoratiOra = 0;
+                
+                const minutiEntrataMattina = timeToMinutes(entrataMattina);
+                
+                if (uscitaPranzo && rientroPranzo) {
+                    // Abbiamo completato la sessione mattina
+                    const minutiUscitaPranzo = timeToMinutes(uscitaPranzo);
+                    const minutiRientroPranzo = timeToMinutes(rientroPranzo);
+                    
+                    minutiLavoratiOra = minutiUscitaPranzo - minutiEntrataMattina;
+                    
+                    if (uscitaFinale) {
+                        // Abbiamo anche l'uscita finale
+                        const minutiUscitaFinale = timeToMinutes(uscitaFinale);
+                        minutiLavoratiOra += minutiUscitaFinale - minutiRientroPranzo;
+                    } else if (currentTime >= minutiRientroPranzo) {
+                        // Stiamo lavorando nel pomeriggio
+                        minutiLavoratiOra += currentTime - minutiRientroPranzo;
+                    }
+                } else if (uscitaPranzo) {
+                    // Solo uscita pranzo, ancora nella sessione mattina
+                    const minutiUscitaPranzo = timeToMinutes(uscitaPranzo);
+                    minutiLavoratiOra = minutiUscitaPranzo - minutiEntrataMattina;
+                } else if (currentTime >= minutiEntrataMattina && currentTime < minutiEntrataMattina + 8*60) {
+                    // Stiamo lavorando adesso (sessione continua)
+                    minutiLavoratiOra = currentTime - minutiEntrataMattina;
+                }
+                
+                // Calcola minuti per la prossima mezz'ora
+                const minutiRimasti = minutiLavoratiOra % 60;
+                let minutiPerMezzoraSuccessiva;
+                
+                if (minutiRimasti < 30) {
+                    minutiPerMezzoraSuccessiva = 30 - minutiRimasti;
+                } else {
+                    minutiPerMezzoraSuccessiva = 60 - minutiRimasti;
+                }
+                
+                if (countdownElement) {
+                    if (minutiLavoratiOra > 0) {
+                        countdownElement.textContent = `${minutiPerMezzoraSuccessiva} min`;
+                        
+                        // Cambia colore se urgente (ultimi 5 minuti)
+                        if (minutiPerMezzoraSuccessiva <= 5) {
+                            countdownElement.classList.add('urgent');
+                        } else {
+                            countdownElement.classList.remove('urgent');
+                        }
+                    } else {
+                        countdownElement.textContent = 'Non in orario lavorativo';
+                        countdownElement.classList.remove('urgent');
+                    }
+                }
+            }
+            
+            // Calcolo orario stimato per 8 ore
+            if (entrataMattina && uscitaPranzo && rientroPranzo) {
+                const minutiMattina = timeToMinutes(uscitaPranzo) - timeToMinutes(entrataMattina);
+                const minutiNecessariPomeriggio = (8 * 60) - minutiMattina;
+                const orarioStimatoMinuti = timeToMinutes(rientroPranzo) + minutiNecessariPomeriggio;
+                
+                const oreStime = Math.floor(orarioStimatoMinuti / 60);
+                const minutiStimati = orarioStimatoMinuti % 60;
+                
+                document.getElementById('orarioStimato').textContent = 
+                    `${oreStime.toString().padStart(2, '0')}:${minutiStimati.toString().padStart(2, '0')}`;
+                
+                realTimeDiv.classList.remove('hidden');
+            } else {
+                realTimeDiv.classList.add('hidden');
+            }
+            
+            // Auto-calcola se abbiamo tutti i dati
+            if (entrataMattina && uscitaPranzo && rientroPranzo && uscitaFinale) {
+                calcolaOreSilent();
+            }
+        }
+
+        // Event listeners per auto-correzione
+        document.getElementById('entrataMattina').addEventListener('blur', function() {
+            const correctedValue = autoCorrectTime(this.value, false);
+            if (correctedValue !== this.value) {
+                this.value = correctedValue;
+                // Effetto visivo per indicare la correzione
+                this.style.background = '#fff3cd';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 1000);
+            }
+            updateAllRealTime();
+        });
+
+        document.getElementById('rientroPranzo').addEventListener('blur', function() {
+            const correctedValue = autoCorrectTime(this.value, true);
+            if (correctedValue !== this.value) {
+                this.value = correctedValue;
+                // Effetto visivo per indicare la correzione
+                this.style.background = '#fff3cd';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 1000);
+            }
+            updateAllRealTime();
+        });
+
+        // Event listeners per real-time update su tutti i campi
+        ['entrataMattina', 'uscitaPranzo', 'rientroPranzo', 'uscitaFinale'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateAllRealTime);
+        });
+
+        function calcolaOre() {
+            const entrataMattina = document.getElementById('entrataMattina').value;
+            const uscitaPranzo = document.getElementById('uscitaPranzo').value;
+            const rientroPranzo = document.getElementById('rientroPranzo').value;
+            const uscitaFinale = document.getElementById('uscitaFinale').value;
+            
+            const errorDiv = document.getElementById('error');
+            const resultsDiv = document.getElementById('results');
+            
+            // Reset errori
+            errorDiv.classList.add('hidden');
+            
+            // Validazione input
+            if (!entrataMattina || !uscitaPranzo || !rientroPranzo || !uscitaFinale) {
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Inserire tutti gli orari per calcolare le ore lavorative.';
+                errorDiv.classList.remove('hidden');
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+
+            // Converti orari in minuti
+            const minutiEntrataMattina = timeToMinutes(entrataMattina);
+            const minutiUscitaPranzo = timeToMinutes(uscitaPranzo);
+            const minutiRientroPranzo = timeToMinutes(rientroPranzo);
+            const minutiUscitaFinale = timeToMinutes(uscitaFinale);
+            
+            // Validazione logica orari
+            if (minutiUscitaPranzo <= minutiEntrataMattina) {
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> L\'uscita per pranzo deve essere dopo l\'entrata mattina.';
+                errorDiv.classList.remove('hidden');
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+            
+            if (minutiRientroPranzo <= minutiUscitaPranzo) {
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Il rientro deve essere dopo l\'uscita per pranzo.';
+                errorDiv.classList.remove('hidden');
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+            
+            if (minutiUscitaFinale <= minutiRientroPranzo) {
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> L\'uscita finale deve essere dopo il rientro da pranzo.';
+                errorDiv.classList.remove('hidden');
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+            
+            // Calcola minuti lavorati
+            const minutiMattina = minutiUscitaPranzo - minutiEntrataMattina;
+            const minutiPomeriggio = minutiUscitaFinale - minutiRientroPranzo;
+            const minutiPausa = minutiRientroPranzo - minutiUscitaPranzo;
+            const minutiLavorati = minutiMattina + minutiPomeriggio;
+            
+            // Converti in ore e minuti
+            const oreLavorate = Math.floor(minutiLavorati / 60);
+            const minutiRimasti = minutiLavorati % 60;
+            
+            // Arrotonda per difetto alla mezz'ora
+            let oreArrotondate = oreLavorate;
+            if (minutiRimasti >= 30) {
+                oreArrotondate += 0.5;
+            }
+            
+            // Calcoli per 8 ore lavorative e straordinari
+            const oreNormali = 8;
+            const mezzoraStraodinario = 0.5;
+            
+            let statusGiornata = '';
+            let perStraordinario = '';
+            let straordinari = 0;
+            
+            if (oreArrotondate < oreNormali) {
+                const mancanti = oreNormali - oreArrotondate;
+                statusGiornata = `<span class="status-warning"><i class="fas fa-exclamation-circle"></i> Mancano ${formatOre(mancanti)} per le 8 ore</span>`;
+                perStraordinario = `Servono ancora ${formatOre(oreNormali + mezzoraStraodinario - oreArrotondate)} per lo straordinario`;
+            } else if (oreArrotondate === oreNormali) {
+                statusGiornata = '<span class="status-complete"><i class="fas fa-check-circle"></i> 8 ore completate!</span>';
+                perStraordinario = `Servono ${formatOre(mezzoraStraodinario)} per completare lo straordinario`;
+            } else if (oreArrotondate < oreNormali + mezzoraStraodinario) {
+                const mancanti = (oreNormali + mezzoraStraodinario) - oreArrotondate;
+                statusGiornata = '<span class="status-complete"><i class="fas fa-check-circle"></i> 8 ore completate!</span>';
+                perStraordinario = `<span class="status-warning">Mancano ${formatOre(mancanti)} per completare lo straordinario</span>`;
+            } else {
+                statusGiornata = '<span class="status-complete"><i class="fas fa-check-circle"></i> 8 ore completate!</span>';
+                straordinari = oreArrotondate - oreNormali;
+                perStraordinario = '<span class="status-overtime"><i class="fas fa-trophy"></i> Straordinario completato!</span>';
+            }
+            
+            // Mostra risultati
+            document.getElementById('tempoTotale').textContent = 
+                `${oreLavorate}h ${minutiRimasti}m`;
+            document.getElementById('oreArrotondate').textContent = 
+                formatOre(oreArrotondate);
+            document.getElementById('statusGiornata').innerHTML = statusGiornata;
+            document.getElementById('perStraordinario').innerHTML = perStraordinario;
+            document.getElementById('durataPausa').textContent = 
+                `${Math.floor(minutiPausa / 60)}h ${minutiPausa % 60}m`;
+            
+            if (straordinari > 0) {
+                document.getElementById('straordinari').innerHTML = 
+                    `<span class="status-overtime"><i class="fas fa-star"></i> ${formatOre(straordinari)}</span>`;
+            } else {
+                document.getElementById('straordinari').innerHTML = 
+                    '<span class="status-warning">Nessuno</span>';
+            }
+            
+            resultsDiv.classList.remove('hidden');
+        }
+        
+        function timeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+        
+        function formatOre(ore) {
+            if (ore === 0) return '0h';
+            
+            const oreIntere = Math.floor(ore);
+            const mezzeOre = (ore - oreIntere) * 2;
+            
+            if (mezzeOre === 0) {
+                return `${oreIntere}h`;
+            } else if (mezzeOre === 1) {
+                return oreIntere > 0 ? `${oreIntere}h 30m` : '30m';
+            }
+            
+            return `${ore}h`;
+        }
+
+        // Imposta orari default
+        window.onload = function() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(Math.floor(now.getMinutes() / 15) * 15).padStart(2, '0');
+            
+            // Carica gli orari salvati
+            loadSavedTimes();
+            
+            // Avvia aggiornamenti real-time
+            updateAllRealTime();
+            realTimeUpdateTimer = setInterval(updateAllRealTime, 30000); // Aggiorna ogni 30 secondi
+        };
+
+        // Funzioni per il localStorage
+        function saveTimes() {
+            const times = {
+                entrataMattina: document.getElementById('entrataMattina').value,
+                uscitaPranzo: document.getElementById('uscitaPranzo').value,
+                rientroPranzo: document.getElementById('rientroPranzo').value,
+                uscitaFinale: document.getElementById('uscitaFinale').value
+            };
+            localStorage.setItem('workTimes', JSON.stringify(times));
+        }
+
+        function loadSavedTimes() {
+            const savedTimes = localStorage.getItem('workTimes');
+            if (savedTimes) {
+                const times = JSON.parse(savedTimes);
+                document.getElementById('entrataMattina').value = times.entrataMattina || '';
+                document.getElementById('uscitaPranzo').value = times.uscitaPranzo || '';
+                document.getElementById('rientroPranzo').value = times.rientroPranzo || '';
+                document.getElementById('uscitaFinale').value = times.uscitaFinale || '';
+            }
+        }
+
+        // Aggiungi event listeners per salvare gli orari quando cambiano
+        ['entrataMattina', 'uscitaPranzo', 'rientroPranzo', 'uscitaFinale'].forEach(id => {
+            document.getElementById(id).addEventListener('change', saveTimes);
+        });
+
+        // Pulizia timer quando la pagina si chiude
+        window.addEventListener('beforeunload', function() {
+            if (realTimeUpdateTimer) {
+                clearInterval(realTimeUpdateTimer);
+            }
+        });
+
+        // Funzioni per il meme del giorno
+        let currentMeme = null;
+
+        async function fetchMemeOfTheDay() {
+            try {
+                const response = await fetch('https://meme-api.com/gimme/wholesomememes');
+                const data = await response.json();
+                
+                if (data) {
+                    currentMeme = {
+                        title: data.title,
+                        url: data.url,
+                        author: data.author,
+                        subreddit: data.subreddit
+                    };
+                }
+            } catch (error) {
+                console.error('Errore nel caricamento del meme:', error);
+            }
+        }
+
+        function showMemeModal() {
+            if (!currentMeme) return;
+            
+            const modal = document.getElementById('memeModal');
+            const overlay = document.getElementById('memeOverlay');
+            const title = document.getElementById('memeTitle');
+            const image = document.getElementById('memeImage');
+            
+            title.textContent = currentMeme.title;
+            image.src = currentMeme.url;
+            image.alt = currentMeme.title;
+            
+            modal.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        function closeMemeModal() {
+            const modal = document.getElementById('memeModal');
+            const overlay = document.getElementById('memeOverlay');
+            
+            modal.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        // Event listeners per il meme
+        document.getElementById('memeButton').addEventListener('click', async () => {
+            await fetchMemeOfTheDay();
+            showMemeModal();
+        });
+        document.getElementById('memeClose').addEventListener('click', closeMemeModal);
+        document.getElementById('memeOverlay').addEventListener('click', closeMemeModal);
+
+        // Carica il meme del giorno al caricamento della pagina
+        window.addEventListener('load', () => {
+            fetchMemeOfTheDay();
+        });
+    </script>
+</body>
+</html> 
